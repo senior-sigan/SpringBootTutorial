@@ -6,5 +6,12 @@
 </head>
 <body>
     <h1>Hello Spring Boot</h1>
+    <div>
+        <form action="#" th:action="@{/}" th:object="${subscription}" method="post">
+            <input th:field="*{name}" name="name" placeholder="Your name" type="text" />
+            <input th:field="*{email}" name="email" placeholder="Your email" type="text"/>
+            <input type="submit" value="Subscribe" />
+        </form>
+    </div>
 </body>
 </html>

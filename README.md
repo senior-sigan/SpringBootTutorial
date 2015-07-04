@@ -63,3 +63,41 @@ public class HomeController {
 ```
 
 Обратите внимание, что `thymeleaf` проверяет html на валидность, поэтому иногда можете получать 500 ошибку, если неправильно написали html: забыли закрыть тэг, например.
+
+## Шаг 3. Добавим формочку
+
+Добавим форму подписки на главную страницу. Для этого в методе `index` `HomeController` добавим аргумент  `Model` - это такой контейнер для объектов, которые нужно показать в шаблоне. Так же создадим form-object - просто джава класс, который представляет собой контейнер формы. 
+ 
+```
+ @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(final Model model) {
+        // В модель добавим новый объект формы подписки
+        model.addAttribute("subscription", new SubscriptionForm());
+        return "home/index";
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public String subscribe(@ModelAttribute SubscriptionForm form, final Model model) {
+        // В запросе пришла заполненная форма. Отправим в модель этот объект и отрендерим ее на другом шаблоне.
+        model.addAttribute("subscription", form);
+        return "home/subscribed";
+    }
+```
+ 
+В шаблоне добавим код для формы.
+
+```html
+<form action="#" th:action="@{/}" th:object="${subscription}" method="post">
+            <input th:field="*{name}" name="name" placeholder="Your name" type="text" />
+            <input th:field="*{email}" name="email" placeholder="Your email" type="text"/>
+            <input type="submit" value="Subscribe" />
+</form>
+```
+
+Добавим шаблон для вывода содержимого формы
+```html
+<h3>You successfully subscribed</h3>
+<p th:text="'email: ' + ${subscriptionForm.email}" />
+<p th:text="'name: ' + ${subscriptionForm.name}" />
+<a href="/">Go to main page</a>
+```
