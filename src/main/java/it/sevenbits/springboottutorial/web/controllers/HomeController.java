@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class HomeController {
-    @RequestMapping
-    @ResponseBody
+    @RequestMapping(value = "/")
     public String index() {
-        return "Hello Spring Boot";
+        // Так как нет аннотации @ResponseBody, то spring будет искать шаблон по адресу home/index
+        // Если шаблона не будет найдено, то вернется 404 ошибка
+        return "home/index";
     }
 }
