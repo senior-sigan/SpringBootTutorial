@@ -19,4 +19,9 @@ public class SubscriptionForm {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return String.format("SubscriptionForm[name=%s, email=%s]", name, email);
+    }
 }
