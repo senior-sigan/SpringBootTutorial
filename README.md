@@ -235,3 +235,139 @@ public class HomeController {
 	</ul>
 </div>
 ```
+
+## Шаг 5. Сохранение данных
+
+Cоздадим пакет `core/domain` и в нем класс `Subscription`. По сути это форма, только с полем id. В данном примере это выглядит странно, что форма полностью совпала с моделью доменного уровня, но это потому что пример очень простой. Очень часто случается так, что одна форма содержит в себе очень много сущностей доменного слоя. Например, форма регистрации на мероприятие. В ней будет информация о пользователе, участнике, его профиле школьника или студента и так далее. Поэтому здесь приводится в качестве примера такая усложненная форма, чтобы в будущем не было вопросов как организовать структуру проекта.
+
+```java
+public class Subscription implements Serializable {
+    private Long id;
+    private String email;
+    private String name;
+	// setters and getters
+}
+```
+
+Создаем пакет `core/repository` с классами `RepositoryException` и интерфейсом `SubscriptionRepository`.
+
+```java
+public interface SubscriptionRepository {
+    void save(final Subscription subscription) throws RepositoryException;
+    List<Subscription> findAll() throws RepositoryException;
+}
+```
+
+Далее мы добавим другие базовые операции из CRUD. Но пока этого будет достаточно.
+
+Мы создали интерфейс для репозитория, намекая, что можно по-разному хранить данные. В этом примере мы будем сохранять данные в памяти в обычный HashMap. Создаем класс `SubscriptionInMemoryRepository`
+
+```java
+@Service
+@Qualifier(value = "subscriptionInMemoryRepository") // квалификатор понадобится потом, когда мы добавим еще одну имплементацию репозитория
+public class SubscriptionInMemoryRepository implements SubscriptionRepository {
+    private final static Logger LOG = Logger.getLogger(SubscriptionInMemoryRepository.class);
+
+    private final Map<Long, Subscription> subscriptions;
+    private final AtomicLong keySequence;
+
+    public SubscriptionInMemoryRepository() {
+        subscriptions = new HashMap<>();
+        keySequence = new AtomicLong(1L);
+    }
+
+    @Override
+    public void save(final Subscription subscription) throws RepositoryException {
+        if (subscription == null) {
+            LOG.error("Subscription is null");
+            throw new RepositoryException("Subscription is null");
+        }
+        LOG.info("Start saving: " + subscription.toString());
+        subscription.setId(keySequence.getAndIncrement());
+        subscriptions.put(subscription.getId(), subscription);
+        LOG.info("Saved: " + subscription.toString());
+    }
+
+    @Override
+    public List<Subscription> findAll() {
+        return new ArrayList<>(subscriptions.values());
+    }
+}
+```
+
+Так как не очень хорошо вызывать методы репозитория напрямую из контролеров, то создадим сервис `SubscriptionsService` на уровне `web`. Этот сервис будет сам вызвать необходимые методы репозитория и переоборачивать модели из уровня `core` в модели уровня `web`. Такой подход помогает достаточно просто переводить наборы или любые комбинации объектов между уровнями, так как очень часто на больших проектах невозможно представлять объекты с которыми мы работаем в веб-приложении с теми данными которые хранятся в базе и представляют бизнес логику.
+
+```java
+public class SubscriptionModel {
+    private final Long id;
+    private final String email;
+    private final String name;
+
+    public SubscriptionModel(Long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+	// Getters only
+}
+```
+
+```java
+@Service
+public class SubscriptionsService {
+    @Autowired
+    private SubscriptionRepository repository;
+
+    public void save(final SubscriptionForm form) throws ServiceException {
+        final Subscription subscription = new Subscription();
+        subscription.setEmail(form.getEmail());
+        subscription.setName(form.getName());
+        try {
+            repository.save(subscription);
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while saving subscription: " + e.getMessage(), e);
+        }
+    }
+
+    public List<SubscriptionModel> findAll() throws ServiceException {
+        try {
+            List<Subscription> subscriptions = repository.findAll();
+            List<SubscriptionModel> models = new ArrayList<>(subscriptions.size());
+            for (Subscription s: subscriptions) {
+                models.add(new SubscriptionModel(s.getId(), s.getName(), s.getEmail()));
+            }
+
+            return models;
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while retrieving subscriptions: " + e.getMessage(), e);
+        }
+    }
+}
+```
+
+В `HomeController` добавляем вызов методы сервиса и новый action `getSubcriptions`.
+
+```java
+@Controller
+public class HomeController {
+    // validator and logger
+    @Autowired
+    private SubscriptionsService service;
+
+    // root action
+
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public String subscribe(@ModelAttribute SubscriptionForm form, final Model model) throws ServiceException {
+		// form validation
+        service.save(form);
+        model.addAttribute("subscription", form);
+        return "home/subscribed";
+    }
+
+    @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
+    @ResponseBody
+    public List<SubscriptionModel> getSubscriptions() throws ServiceException {
+        return service.findAll();
+    }
+}	
+```
