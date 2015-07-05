@@ -5,6 +5,7 @@ import it.sevenbits.springboottutorial.core.repository.SubscriptionRepository;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionForm;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 @Service
 public class SubscriptionsService {
     @Autowired
+    @Qualifier(value = "subscriptionPersistRepository")
     private SubscriptionRepository repository;
 
     public void save(final SubscriptionForm form) throws ServiceException {

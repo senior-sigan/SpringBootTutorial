@@ -371,3 +371,137 @@ public class HomeController {
     }
 }	
 ```
+
+## Шаг 6. Сохранение даных в БД.
+
+В прошлом шаге мы сохраняли данные просто в памяти. Теперь добавим поддержку репозиторий для сохранения данных в БД, например postgresql, mysql, sqlite или [hsql](https://ru.wikipedia.org/wiki/HSQLDB). 
+
+Для работы с БД будем использовать [MyBatis](https://mybatis.github.io/mybatis-3/index.html#). Данные будем хранить с использование Hsql, чтобы не настраивать сервер. Добавим необходимые зависимости в `pom.xml`
+
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.hsqldb</groupId>
+    <artifactId>hsqldb</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.2.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>1.2.2</version>
+</dependency>
+
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+    <version>3.2.1</version>
+</dependency>
+```
+
+  Добавим новый пакет `core/mappers` в который мы сложим все мапперы для mybatis. Мапер переводит sql объекты из БД в наши java объекты. Создадим мапер для сохранения и получения `Subscription`.
+
+```java
+public interface SubscriptionMapper {
+
+    @Select("SELECT id, name, email FROM subscriptions")
+    @Results({
+        @Result(column = "id", property = "id"),
+        @Result(column = "email", property = "email"),
+        @Result(column = "name", property = "name")
+    })
+    List<Subscription> findAll();
+
+    @Insert("INSERT INTO subscriptions (email, name) VALUES (#{email}, #{name})")
+    void save(final Subscription subscription);
+}
+```
+
+Репозиторий будет выглядеть совсем просто - как будто мы вызываем методы мапера и все.
+
+```java
+@Repository
+@Qualifier(value = "subscriptionPersistRepository")
+public class SubscriptionPersistRepository implements SubscriptionRepository {
+    private static Logger LOG = Logger.getLogger(SubscriptionPersistRepository.class);
+
+    @Autowired
+    private SubscriptionMapper mapper;
+
+
+    @Override
+    public void save(final Subscription subscription) throws RepositoryException {
+        if (subscription == null) {
+            throw new RepositoryException("Subscription is null");
+        }
+        try {
+            mapper.save(subscription);
+        } catch (Exception e) {
+            throw new RepositoryException("An error occurred while saving subscription: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Subscription> findAll() throws RepositoryException {
+        try {
+            return mapper.findAll();
+        } catch (Exception e) {
+            throw new RepositoryException("An error occurred while retrieving subscriptions: " + e.getMessage(), e);
+        }
+    }
+}
+```
+
+Необходимо сказать спрингу, где брать маперы. Так же для mybatis надо явно указать бин SqlSessionFactory, с помощью которого инициализируются маперы. Поэтому создадим кофигурационный файл в пакете `config`. Сразу же добавим настройку для Flyway - утилита для миграций, имеющая java-api который используется spring-ом.
+
+```java
+@Configuration
+@MapperScan(basePackages = "it.sevenbits.springboottutorial.core.mappers")
+public class DatabaseConfig {
+    @Autowired
+    private DataSource dataSource;
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        return flyway;
+    }
+
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
+        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+        bean.setDataSource(dataSource);
+        return bean.getObject();
+    }
+}
+```
+
+По умолчанию `flyway` ищет файлы для миграций в каталоге `resources/db/migrations` и требует особый формат имени файла `V{version_number}__{migration name}.sql`. Создаем файл `db/migration/V2015.07.05.22.47__Create_subscriptions_table.sql`
+
+```sql
+CREATE TABLE subscriptions (
+  id INTEGER NOT NULL IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL
+);
+```
+
+Не забудем в сервисе `SubscriptionsService` добавить квалификатор для нового репозитория.
+
+```java
+@Autowired
+@Qualifier(value = "subscriptionPersistRepository")
+private SubscriptionRepository repository;
+```
