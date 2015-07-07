@@ -1,3 +1,6 @@
+server:
+  port: 9000
+
 spring:
   datasource:
     url: jdbc:hsqldb:file:target/sbtdb/springboottutorial
