@@ -8,9 +8,14 @@
 <h1>Hello Spring Boot</h1>
 <div>
     <h3>You successfully subscribed</h3>
-    <p th:text="'email: ' + ${subscriptionForm.email}" />
-    <p th:text="'name: ' + ${subscriptionForm.name}" />
-    <a href="/">Go to main page</a>
+    <p th:text="'email: ' + ${subscriptionForm.email}"></p>
+    <p th:text="'name: ' + ${subscriptionForm.name}"></p>
+    <p>
+        <a th:href="@{/}">Go to main page</a>
+    </p>
+    <p>
+        <a th:href="@{subscriptions}">Subscriptions</a>
+    </p>
 </div>
 </body>
 </html>
