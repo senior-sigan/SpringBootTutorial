@@ -1,0 +1,13 @@
+extends ../layout
+
+block append content
+
+  h1 Hello Spring Boot
+  div
+    h3 You successfully subscribed
+    p= subscriptionForm.email
+    p= subscriptionForm.name
+    p
+      a(href="/") Go to main page
+    p
+      a(href="/subscriptions") Subscriptions

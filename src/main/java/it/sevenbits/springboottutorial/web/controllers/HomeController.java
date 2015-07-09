@@ -53,8 +53,8 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
-    @ResponseBody
-    public List<SubscriptionModel> getSubscriptions() throws ServiceException {
-        return service.findAll();
+    public String getSubscriptions(final Model model) throws ServiceException {
+        model.addAttribute("subscriptions", service.findAll());
+        return "home/subscriptions";
     }
 }

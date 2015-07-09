@@ -24,8 +24,9 @@
 
         <!-- HTML5 template engine for spring-boot -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <groupId>com.domingosuarez.boot</groupId>
+            <artifactId>spring-boot-starter-jade4j</artifactId>
+            <version>0.3.0</version>
         </dependency>
 
         <!-- spring-jdbc for embedded db auto-configuration -->
