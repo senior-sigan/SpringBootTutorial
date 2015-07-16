@@ -1,0 +1,16 @@
+extends ../layout
+
+block append content
+
+  if param.error
+    .aler.alert-danger
+      p= param.error
+  form(action="/login", method="post")
+    input(type="hidden", name="#{_csrf.parameterName}", value="#{_csrf.token}")
+    .form-group
+      label(for="name-input") Email
+      input#name-input.form-control(name="username", placeholder="Your email", type="text")
+    .form-group
+      label(for="password-input") Password
+      input#password-input.form-control(name="password", placeholder="Your password", type="password")
+    button.btn.btn-success(type="submit") Login

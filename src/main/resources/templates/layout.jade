@@ -7,6 +7,10 @@ html
 
       meta(name="viewport", content="width=device-width, initial-scale=1")
 
+      //- Meta tags to use csrf token in ajax forms
+      meta(name="_csrf", content="#{_csrf.token}")
+      meta(name="_csrf_header", content="#{_csrf.headerName}")
+
       link(rel="stylesheet", href="resources/vendor/stylesheets/bootstrap.min.css")
       link(rel="stylesheet", href="resources/vendor/stylesheets/bootstrap-theme.min.css")
       link(rel="stylesheet", href="resources/stylesheets/app.css")
