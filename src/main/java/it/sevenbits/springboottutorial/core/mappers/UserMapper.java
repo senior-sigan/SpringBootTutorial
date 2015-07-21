@@ -31,7 +31,7 @@ public interface UserMapper {
     User findById(@Param("id") Long id);
 
     @Insert("INSERT INTO users (email, password_hash, role)\n" +
-            "VALUES (#{email}, #{password}, 'USER')")
+            "VALUES (#{email}, #{password}, 'ROLE_USER')")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     void save(User user);
 }
