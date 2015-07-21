@@ -8,8 +8,8 @@ block append content
     if errors
       .alert.alert-danger
         ul
-          each error in errors
-            li= error
+          each error, key in errors
+            li #{key} #{error}
 
     form(action="/", method="post")
       input(type="hidden", name="#{_csrf.parameterName}", value="#{_csrf.token}")

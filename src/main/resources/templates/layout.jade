@@ -19,5 +19,9 @@ html
       script(type="application/javascript", src="resources/vendor/scripts/bootstrap.min.js")
       script(type="application/javascript", src="resources/scripts/app.js")
   body
+    if security.isUserInRole("ROLE_USER")
+      form(action="logout", method="POST")
+        input(type="hidden", name="#{_csrf.parameterName}", value="#{_csrf.token}")
+        button.btn(type="submit") Logout
     .container
       block content

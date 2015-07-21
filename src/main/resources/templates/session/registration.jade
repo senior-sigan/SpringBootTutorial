@@ -1,0 +1,19 @@
+extends ../layout
+block append content
+  if errors
+    .alert.alert-danger
+      ul
+        each error, key in errors
+          li #{key} #{error}
+  form(action="/registration", method="post")
+    input(type="hidden", name="#{_csrf.parameterName}", value="#{_csrf.token}")
+    .form-group
+      label(for="email-input") Email
+      input#email-input.form-control(name="email", placeholder="Your email", type="text", value="#{form.email}")
+    .form-group
+      label(for="password-input") Password
+      input#password-input.form-control(name="password", placeholder="Your password", type="password")
+    .form-group
+      label(for="password-confirmation-input") Confirm password
+      input#password-confirmation-input.form-control(name="passwordConfirmation", placeholder="Confirm your password", type="password")
+    button.btn.btn-success(type="submit") Register
