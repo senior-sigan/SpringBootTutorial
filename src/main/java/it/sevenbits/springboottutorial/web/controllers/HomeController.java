@@ -2,11 +2,14 @@ package it.sevenbits.springboottutorial.web.controllers;
 
 import it.sevenbits.springboottutorial.web.domain.SubscriptionForm;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionModel;
+import it.sevenbits.springboottutorial.web.domain.SubscriptionsJsonResponse;
 import it.sevenbits.springboottutorial.web.service.ServiceException;
 import it.sevenbits.springboottutorial.web.service.SubscriptionFormValidator;
 import it.sevenbits.springboottutorial.web.service.SubscriptionsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -52,9 +55,26 @@ public class HomeController {
         return "home/subscribed";
     }
 
+    @RequestMapping(value = "/subscriptions.json", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<SubscriptionsJsonResponse> getSubscriptionsJson(final Model model) {
+        List<SubscriptionModel> subscriptions = null;
+        HttpStatus status = HttpStatus.OK;
+        Integer count = 0;
+        
+        try {
+            subscriptions = service.findAll();
+            count = subscriptions.size();
+        } catch (ServiceException e) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            LOG.error("Can't load subscriptions: " + e.getMessage());
+        }
+        
+        return new ResponseEntity<>(new SubscriptionsJsonResponse(count, subscriptions), status);
+    }
+
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
-    public String getSubscriptions(final Model model) throws ServiceException {
-        model.addAttribute("subscriptions", service.findAll());
-        return "home/subscriptions";
+    public String getSubscriptions() {
+        return "home/subscriptionsLayout";
     }
 }

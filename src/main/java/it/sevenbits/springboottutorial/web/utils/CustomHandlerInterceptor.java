@@ -22,6 +22,8 @@ public class CustomHandlerInterceptor extends HandlerInterceptorAdapter {
         Object handler,
         ModelAndView mav
     ) throws Exception {
-        mav.addObject(SECURITY_SERVICE_NAME, userResolver);
+        if (mav != null) {
+            mav.addObject(SECURITY_SERVICE_NAME, userResolver);
+        }
     }
 }

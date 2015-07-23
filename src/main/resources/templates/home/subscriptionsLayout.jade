@@ -1,0 +1,21 @@
+extends ../layout
+block append content
+  .row#subscriptions
+  
+  script(id="subscriptionsTemplate", type="text/x-handlebars-template")
+    table.table.table-hover
+      thead
+        tr
+          th Id
+          th Name
+          th Email
+      tbody
+      | {{#each data}}  
+      tr
+        td {{id}}
+        td {{name}}
+        td {{email}}
+      | {{/each}}
+      
+  script(type='text/javascript').
+    App.fillSubscriptions();
