@@ -27,6 +27,23 @@ public class SubscriptionsService {
             throw new ServiceException("An error occurred while saving subscription: " + e.getMessage(), e);
         }
     }
+    
+    public void delete(Long id) throws ServiceException {
+        try {
+            repository.delete(id);
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while deleting subscription " + id.toString() +  ": " + e.getMessage(), e);
+        }
+    }
+
+    public SubscriptionModel find(Long id) throws ServiceException {
+        try {
+            Subscription subscription = repository.find(id);
+            return new SubscriptionModel(subscription.getId(), subscription.getName(), subscription.getEmail());
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while deleting subscription " + id.toString() +  ": " + e.getMessage(), e);
+        }
+    }
 
     public List<SubscriptionModel> findAll() throws ServiceException {
         try {

@@ -40,4 +40,18 @@ public class SubscriptionInMemoryRepository implements SubscriptionRepository {
     public List<Subscription> findAll() {
         return new ArrayList<>(subscriptions.values());
     }
+
+    @Override
+    public void delete(Long id) throws RepositoryException {
+        try {
+            subscriptions.remove(id);    
+        } catch (Exception e) {
+            throw new RepositoryException("Can't remove subscription: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Subscription find(Long id) throws RepositoryException {
+        return subscriptions.get(id);
+    }
 }

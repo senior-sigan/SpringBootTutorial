@@ -38,4 +38,22 @@ public class SubscriptionPersistRepository implements SubscriptionRepository {
             throw new RepositoryException("An error occurred while retrieving subscriptions: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void delete(final Long id) throws RepositoryException {
+        try {
+            mapper.delete(id);
+        } catch (Exception e) {
+            throw new RepositoryException("An error occurred while deleting subscription: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Subscription find(final Long id) throws RepositoryException {
+        try {
+            return mapper.find(id);
+        } catch (Exception e) {
+            throw new RepositoryException("An error occurred while retrieving subscription by id " + id.toString() + " :" + e.getMessage(), e);
+        }
+    }
 }
