@@ -1,6 +1,6 @@
 extends ../layout
 block append content
-  .row#subscriptions
+  .row#js-subscriptions
   
   script(id="subscriptionsTemplate", type="text/x-handlebars-template")
     table.table.table-hover
@@ -11,11 +11,10 @@ block append content
           th Email
       tbody
       | {{#each data}}  
-      tr
+      tr(data-id='{{id}}')
         td {{id}}
         td {{name}}
         td {{email}}
+        td
+          a.btn.btn-danger.js-remove Remove
       | {{/each}}
-      
-  script(type='text/javascript').
-    App.fillSubscriptions();

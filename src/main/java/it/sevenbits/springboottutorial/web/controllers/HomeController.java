@@ -1,5 +1,6 @@
 package it.sevenbits.springboottutorial.web.controllers;
 
+import it.sevenbits.springboottutorial.web.domain.CommonResponse;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionForm;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionModel;
 import it.sevenbits.springboottutorial.web.domain.SubscriptionsJsonResponse;
@@ -12,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -72,6 +70,26 @@ public class HomeController {
         
         return new ResponseEntity<>(new SubscriptionsJsonResponse(count, subscriptions), status);
     }
+    
+    @RequestMapping(value = "/subscriptions/{id}.json", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<CommonResponse> deleteSubscription(@PathVariable String id) {
+        CommonResponse response = new CommonResponse();
+        HttpStatus status = HttpStatus.OK;
+        String errorMessage = null;
+        
+        try {
+            Long idL = Long.parseLong(id);
+            service.delete(idL);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            LOG.error("Can't delete subscription due error: " + e.getMessage());
+            response.setError("Can't delete subscription");
+            status = HttpStatus.NOT_FOUND;
+        }
+        
+        return new ResponseEntity<>(response, status);
+    } 
 
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
     public String getSubscriptions() {
