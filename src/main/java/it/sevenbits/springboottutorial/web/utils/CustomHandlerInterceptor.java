@@ -11,9 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class CustomHandlerInterceptor extends HandlerInterceptorAdapter {
     static final String SECURITY_SERVICE_NAME = "security";
+    static final String ASSETS_SERVICE_NAME = "assets";
 
     @Autowired
     UserResolver userResolver;
+    
+    @Autowired
+    AssetsResolver assetsResolver;
 
     @Override
     public void postHandle(
@@ -24,6 +28,7 @@ public class CustomHandlerInterceptor extends HandlerInterceptorAdapter {
     ) throws Exception {
         if (mav != null) {
             mav.addObject(SECURITY_SERVICE_NAME, userResolver);
+            mav.addObject(ASSETS_SERVICE_NAME, assetsResolver);
         }
     }
 }

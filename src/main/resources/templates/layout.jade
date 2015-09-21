@@ -13,12 +13,12 @@ html
 
       link(rel="stylesheet", href="resources/vendor/stylesheets/bootstrap.min.css")
       link(rel="stylesheet", href="resources/vendor/stylesheets/bootstrap-theme.min.css")
-      link(rel="stylesheet", href="resources/stylesheets/app.css")
+      link(rel="stylesheet", href=assets.getVersionedResourceUrl("resources/stylesheets/bundle#version.css"))
 
       script(type="application/javascript", src="resources/vendor/scripts/jquery-2.1.4.min.js")
       script(type="application/javascript", src="resources/vendor/scripts/bootstrap.min.js")
       script(type="application/javascript", src="resources/vendor/scripts/handlebars.min.js")  
-      script(type="application/javascript", src="resources/scripts/app.js")
+      script(type="application/javascript", src=assets.getVersionedResourceUrl("resources/scripts/bundle#version.js"))
   body
     if security.isUserInRole("ROLE_USER")
       form(action="logout", method="POST")

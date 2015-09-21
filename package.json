@@ -1,0 +1,24 @@
+{
+  "name": "SpringBootTutorial",
+  "version": "1.0.0",
+  "description": "В этом туториале вы научитесь как создать простое веб-приложение с использованием [Spring Boot](http://projects.spring.io/spring-boot/).",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blan4/SpringBootTutorial.git"
+  },
+  "author": "Ilya Siganov <ilya.blan4@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blan4/SpringBootTutorial/issues"
+  },
+  "homepage": "https://github.com/blan4/SpringBootTutorial",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-uglify": "^1.4.1",
+    "js-yaml": "^3.4.2"
+  }
+}

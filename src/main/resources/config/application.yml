@@ -6,3 +6,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/tutorial_dev
     username: tutorial
     password: tutorialpwd
+
+assets:
+  version:
