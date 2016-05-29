@@ -173,3 +173,42 @@ public class HomeController {
 
 Обратите внимание, по умолчанию `@Controller` в своих обработчиках возвращает путь до шаблона.
 
+# Обработка форм
+
+Создадим в классе `HomeController` новый обработчик `writeMessage`, который просто отдаст содержимое формы в формате json.
+
+```
+@RequestMapping(value = "/", method = RequestMethod.POST)
+@ResponseBody
+public MessageForm writeMessage(
+    final Model model,
+    @ModelAttribute final MessageForm form
+) {
+    log.info("POST / " + form);
+    return form;
+}
+```
+
+Создадим простой POJO класс `src/main/java/it/sevenbits/web/forms/MessageForm.java`.
+
+```
+public class MessageForm {
+    private String name;
+    private String message;
+    
+    // Get и Set методы тут
+}
+```
+
+В `index.jade` добавим саму форму. Обратите внимание на атрибуты тегов `form` и `input`. Зачения атрибутов `name` должны совпадать с именем set метода. Например имени `name=field` должен соответствовать метод `setField(String value)`.  
+
+```
+form(action="/", method="POST")
+  .form-group
+    label(for="name-input") Name
+    input#name-input(name="name", placeholder="Your name", type="text")
+  .form-group
+    label(for="message-input") Message
+    textarea#message-input(name="message", placeholder="Your message is here")
+  button(type="submit") Post
+```

@@ -5,3 +5,12 @@ block append content
   h1 Hello Spring Boot
   
   p This is Home/index page
+  
+  form(action="/", method="POST")
+    .form-group
+      label(for="name-input") Name
+      input#name-input(name="name", placeholder="Your name", type="text")
+    .form-group
+      label(for="message-input") Message
+      textarea#message-input(name="message", placeholder="Your message is here")
+    button(type="submit") Post
