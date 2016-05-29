@@ -19,6 +19,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.domingosuarez.boot</groupId>
+            <artifactId>spring-boot-starter-jade4j</artifactId>
+            <version>0.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
