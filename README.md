@@ -4,7 +4,7 @@
 
 Для создания проекта вручную можно воспользоваться командой:
 
-```
+```bash
 mvn -B archetype:generate \
   -DarchetypeGroupId=org.apache.maven.archetypes \
   -DgroupId=it.sevenbits\
@@ -13,7 +13,7 @@ mvn -B archetype:generate \
 
 Далее надо проверить pom.xml и добавить нужные зависимости. Тогда минимально рабочий pom.xml должен выглядеть следующим образом:
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -45,7 +45,7 @@ mvn -B archetype:generate \
 
 Первым делом надо создать main класс для загрузки сервера. Создадим его по адресу `src/main/java/it/sevenbits/web/App.java` (наличие полного пакета строго обязательно).
 
-```
+```java
 @SpringBootApplication // специальная аннотация, помечающая данный класс как веб-сервер, конфигурационный, с автоматическим поиском других конфигов.
 public class App extends SpringBootServletInitializer {
     public static void main(String[] args) {
@@ -58,7 +58,7 @@ public class App extends SpringBootServletInitializer {
 
 Далее создаем первый контроллер по адресу `src/main/java/it/sevenbits/web/controllers/HomeController.java`.
 
-```
+```java
 @Controller // stereotype аннотация, означающая что данный класс может обрабатывать входящие запросы.
 public class HomeController {
 
@@ -78,7 +78,7 @@ public class HomeController {
 
 Для сборки приложения в jar файл и последующего развертывания необходимо подключить специальный плагин в `pom.xml`.
 
-```
+```xml
 <build>
     <plugins>
         <plugin>
@@ -97,7 +97,7 @@ public class HomeController {
 
 Создадим файл `src/main/resources/application.yml`:
 
-```
+```yml
 server:
   port: 9000
 ```
@@ -112,7 +112,7 @@ server:
 
 Предлагается использовать [jade4j](https://github.com/neuland/jade4j). Для этого подкючим зависимость в pom.xml
 
-```
+```xml
 <dependency>
     <groupId>com.domingosuarez.boot</groupId>
     <artifactId>spring-boot-starter-jade4j</artifactId>
@@ -122,7 +122,7 @@ server:
 
 И дополним `application.yml`:
 
-```
+```yml
 spring:
   jade4j:
     caching: false
@@ -131,7 +131,7 @@ spring:
 
 Создадим перый шаблон по адресу `src/main/resources/templates/layout.jade`. 
 
-```
+```jade
 !!! 5
 html
   head
@@ -148,7 +148,7 @@ html
 
 Тогда создадим `src/main/resources/templates/home/index.jade`
 
-```
+```jade
 extends ../layout
 
 block append content
@@ -160,7 +160,7 @@ block append content
 
 Для того чтобы spring-boot стал отдавать jade-шаблоны не нужно делать ничего. Единственное, что надо сделать - это поменять `HomeController`.
 
-```
+```java
 @Controller
 public class HomeController {
 
@@ -177,7 +177,7 @@ public class HomeController {
 
 Создадим в классе `HomeController` новый обработчик `writeMessage`, который просто отдаст содержимое формы в формате json.
 
-```
+```java
 @RequestMapping(value = "/", method = RequestMethod.POST)
 @ResponseBody
 public MessageForm writeMessage(
@@ -191,7 +191,7 @@ public MessageForm writeMessage(
 
 Создадим простой POJO класс `src/main/java/it/sevenbits/web/forms/MessageForm.java`.
 
-```
+```java
 public class MessageForm {
     private String name;
     private String message;
@@ -202,7 +202,7 @@ public class MessageForm {
 
 В `index.jade` добавим саму форму. Обратите внимание на атрибуты тегов `form` и `input`. Зачения атрибутов `name` должны совпадать с именем set метода. Например имени `name=field` должен соответствовать метод `setField(String value)`.  
 
-```
+```jade
 form(action="/", method="POST")
   .form-group
     label(for="name-input") Name
