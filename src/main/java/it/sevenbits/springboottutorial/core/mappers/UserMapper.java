@@ -20,7 +20,7 @@ public interface UserMapper {
 
     @Select("SELECT id, email, password_hash, enabled, role\n" +
             "FROM users\n" +
-            "WHERE if=#{id}")
+            "WHERE id=#{id}")
     @Results({
         @Result(column = "id", property = "id"),
         @Result(column = "email", property = "email"),
